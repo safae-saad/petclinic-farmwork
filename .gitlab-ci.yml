@@ -1,72 +1,27 @@
+image: docker:latest
+services:
+  - docker:dind
+
+variables:
+  DOCKER_DRIVER: overlay
+  SPRING_PROFILES_ACTIVE: gitlab-ci
+
 stages:
   - build
-  - test
-  - quality
   - package
+#  - deploy
 
-cache:
-  paths:
-    - .m2/repository
-  key: "$CI_JOB_NAME"
-
-build_job:
+maven-build:
+  image: maven:3-jdk-8
   stage: build
-  script:
-    - ./mvnw compile
-      -Dhttps.protocols=TLSv1.2
-      -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository
-      -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN
-      -Dorg.slf4j.simpleLogger.showDateTime=true
-      -Djava.awt.headless=true
-      --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true
-  image: openjdk:8-alpine
-
-test_job:
-  stage: test
-  script:
-    - ./mvnw test
-      -Dhttps.protocols=TLSv1.2
-      -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository
-      -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN
-      -Dorg.slf4j.simpleLogger.showDateTime=true
-      -Djava.awt.headless=true
-      --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true
-  image: openjdk:8-alpine
-  
-
-code_quality_job:
-  stage: quality
-  allow_failure: true
-  image: docker:stable
-  services:
-    - docker:stable-dind
-  script:
-    - mkdir codequality-results
-    - docker run
-        --env CODECLIMATE_CODE="$PWD"
-        --volume "$PWD":/code
-        --volume /var/run/docker.sock:/var/run/docker.sock
-        --volume /tmp/cc:/tmp/cc
-        codeclimate/codeclimate analyze -f html > ./codequality-results/index.html
+  script: "mvn package -B"
   artifacts:
     paths:
-      - codequality-results/
-package_job:
-  stage: package
-  services:
-    - docker:stable-dind
-    
-  variables:
-    DOCKER_HOST: tcp://docker:2375
-  script:
-    - apk add --no-cache docker
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-    - ./mvnw install -PbuildDocker -DskipTests=true -DpushImage
-      -Dhttps.protocols=TLSv1.2
-      -Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository
-      -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=WARN
-      -Dorg.slf4j.simpleLogger.showDateTime=true
-      -Djava.awt.headless=true
-      --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true
-  image: openjdk:8-alpine
+      - target/*.war
   
+docker-build:
+  stage: package
+  script:
+    - docker build -t registry.gitlab.com/hrold/petclinic-framework .
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - docker push registry.gitlab.com/hrold/petclinic-framework
