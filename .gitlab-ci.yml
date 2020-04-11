@@ -32,22 +32,21 @@ test_job:
       --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true
   image: openjdk:8-alpine
   
-  
-  code_quality_job:
-    stage: quality
-    allow_failure:true
-    image: docker:stable
-    services:
-      - docker:stable-dind
-    script:
-      - mkdir codequality-results
-      - docker run
-          --env CODECLIMATE_CODE="$PWD"
-          --volume "$PWD":/code
-          --volume /var/run/docker.sock:/var/run/docker.sock
-          --volume /tmp/cc:/tmp/cc
-          codeclimate/codeclimate analyze -f html > ./codequality-results/index.html
+
+code_quality_job:
+  stage: quality
+  allow_failure: true
+  image: docker:stable
+  services:
+    - docker:stable-dind
+  script:
+    - mkdir codequality-results
+    - docker run
+        --env CODECLIMATE_CODE="$PWD"
+        --volume "$PWD":/code
+        --volume /var/run/docker.sock:/var/run/docker.sock
+        --volume /tmp/cc:/tmp/cc
+        codeclimate/codeclimate analyze -f html > ./codequality-results/index.html
   artifacts:
     paths:
       - codequality-results/
-      
