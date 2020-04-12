@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: petclinic2-back
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: petclinic2-back
+  template:
+    metadata:
+      labels:
+        app: petclinic2-back
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+      - name: petclinic2-back
+        image: redis
+        ports:
+        - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: perclinic2-back
+spec:
+  ports:
+  - port: 6379
+  selector:
+    app: petclinic2-back
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: petclinic2-front
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: petclinic2-front
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5 
+  template:
+    metadata:
+      labels:
+        app: petclinic2-front
+    spec:
+      nodeSelector:
+        "beta.kubernetes.io/os": linux
+      containers:
+      - name: petclinic-front
+        image: registrypetclinic.azurecr.io/petclinic2:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m
+        env:
+        - name: REDIS
+          value: "petclinic2-back"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: petclinic2-front
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8080
+  selector:
+    app: petclinic2-front
