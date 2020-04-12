@@ -1,0 +1,15 @@
+version: '3'
+services:
+  azure-vote-back:
+    image: redis
+    container_name: petclinic2-back
+    ports:
+        - "6379:6379"
+
+  azure-vote-front:
+    image: registrypetclinic.azurecr.io/petclinic2:latest
+    container_name: petclinic2-front
+    environment:
+      REDIS: petclinic2-back
+    ports:
+        - "80:80"
