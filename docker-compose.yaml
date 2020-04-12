@@ -12,4 +12,4 @@ services:
     environment:
       REDIS: petclinic2-back
     ports:
-        - "80:80"
+        - "8080:80"
