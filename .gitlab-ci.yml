@@ -24,7 +24,7 @@ docker-build:
   script:
     #- docker build -t registry.gitlab.com/zinab_saadane/petclinic2 .
     #- docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
-    #- docker push registry.gitlab.com/zinab_saadane/petclinic-framework
+    #- docker push registry.gitlab.com/zinab_saadane/petclinic2
     - docker build -t $AZURE_REGISTRY/petclinic2:latest .
     - docker login -u $AZURE_LOGIN -p $AZURE_PASSWORD $AZURE_REGISTRY
     - docker push $AZURE_REGISTRY/petclinic2:latest
