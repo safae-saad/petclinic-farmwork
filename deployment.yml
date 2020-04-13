@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
       - name: petclinic_zinab
-        image: registry.gitlab.com/zinab_saadane/PETCLINIC2 
+        image: registry.gitlab.com/zinab_saadane/petclinic2_app 
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
