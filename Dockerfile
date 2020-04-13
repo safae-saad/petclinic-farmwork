@@ -1,4 +1,4 @@
 FROM tomcat:8.5.53-jdk8-openjdk
-VOLUME /tmp
+COPY wait-for-it.sh  /usr/local/tomcat/wait-for-it.sh
 COPY target/petclinic.war /usr/local/tomcat/webapps/petclinic.war
-ENTRYPOINT ["catalina.sh", "run"]
+
