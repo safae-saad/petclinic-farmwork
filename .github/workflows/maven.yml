@@ -47,8 +47,8 @@ jobs:
         password: ${{ secrets.ACR_PASSWORD }}
     # Build + Push docker image to ACR
     - run: |
-        docker build . -t ${{ env.ACR_REPOSITORY }}/petclinic:latest
-        docker push ${{ env.ACR_REPOSITORY }}/petclinic:latest
+        docker build . -t ${{ env.ACR_REPOSITORY }}/petclinic2:latest
+        docker push ${{ env.ACR_REPOSITORY }}/petclinic2:latest
     # Select AKS cluster
     - uses: azure/aks-set-context@v1
       with:
@@ -75,7 +75,7 @@ jobs:
           manifests/deployment.yml
           manifests/service.yml
         images: |
-          ${{ env.ACR_REPOSITORY }}/petclinic:latest
+          ${{ env.ACR_REPOSITORY }}/petclinic2:latest
         imagepullsecrets: |
           ${{ env.ACR_REPOSITORY }}-secret
           
