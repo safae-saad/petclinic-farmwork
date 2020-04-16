@@ -16,7 +16,7 @@ spec:
         app: petclinic
     spec:
       containers:
-        - image: registrypetclinic.azurecr.io/petclinic:latest
+        - image: registrypetclinic.azurecr.io/petclinic2:latest
           imagePullPolicy: Always
           name: petclinic
           ports:
