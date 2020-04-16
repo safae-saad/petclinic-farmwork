@@ -37,7 +37,7 @@ jobs:
     # Build
     - name: Build with Maven
       #run: mvn package -B -DskipTests --file pom.xml 
-      run: mvn package -B -DskipTests --file pom.xml 
+      run: mvn package -B -P MySQL -DskipTests --file pom.xml 
     # Connect to ACR
     - name: Connect to ACR
       uses: azure/docker-login@v1
