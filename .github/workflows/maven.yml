@@ -11,7 +11,7 @@ on:
 
 env:
   ACR_REPOSITORY: registrypetclinic.azurecr.io
-  AKS_CLUSTER: petclinic-cluster
+  AKS_CLUSTER: kub-petclinic-cluster
   AKS_RESOURCEGROUP: myRGSgroup
   NAMESPACE: petclinic-app
 
